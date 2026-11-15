@@ -37,6 +37,11 @@ func TestAccServiceOfferingFixed(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      "cloudstack_service_offering_fixed.fixed1",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccServiceOfferingFixed2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("cloudstack_service_offering_fixed.fixed2", "name", "fixed2"),
@@ -65,11 +70,6 @@ func TestAccServiceOfferingFixed(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("cloudstack_service_offering_fixed.disk_storage", "name", "disk_storage"),
 				),
-			},
-			{
-				ResourceName:      "cloudstack_service_offering_fixed.disk_storage",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -255,8 +255,8 @@ resource "cloudstack_service_offering_fixed" "disk_storage" {
 		disk_offering_strictness = false
 	}
 	disk_storage = {
-		min_iops = 100
-		max_iops = 100
+			min_iops = 100
+			max_iops = 100
 	}
 }
 `

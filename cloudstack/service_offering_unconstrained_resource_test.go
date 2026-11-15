@@ -37,6 +37,11 @@ func TestAccServiceOfferingUnconstrained(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      "cloudstack_service_offering_unconstrained.unconstrained1",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccServiceOfferingUnconstrained2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("cloudstack_service_offering_unconstrained.unconstrained2", "name", "unconstrained2"),
@@ -65,11 +70,6 @@ func TestAccServiceOfferingUnconstrained(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("cloudstack_service_offering_unconstrained.disk_storage", "name", "disk_storage"),
 				),
-			},
-			{
-				ResourceName:      "cloudstack_service_offering_unconstrained.disk_storage",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

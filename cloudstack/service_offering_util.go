@@ -112,34 +112,69 @@ func (state *serviceOfferingCommonResourceModel) commonRead(ctx context.Context,
 	state.LimitCpuUse = types.BoolValue(cs.Limitcpuuse)
 	state.OfferHa = types.BoolValue(cs.Offerha)
 
-	// Refresh the nested blocks and encode them back into state so drift is detected
-	if !state.ServiceOfferingDiskQosHypervisor.IsNull() {
+	// Refresh nested blocks and initialize them during import when
+	// CloudStack returns values for those blocks.
+	if !state.ServiceOfferingDiskQosHypervisor.IsNull() ||
+		cs.DiskBytesReadRate > 0 ||
+		cs.DiskBytesReadRateMax > 0 ||
+		cs.DiskBytesReadRateMaxLength > 0 ||
+		cs.DiskBytesWriteRate > 0 ||
+		cs.DiskBytesWriteRateMax > 0 ||
+		cs.DiskBytesWriteRateMaxLength > 0 {
+
 		var v ServiceOfferingDiskQosHypervisor
-		diags.Append(state.ServiceOfferingDiskQosHypervisor.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		if !state.ServiceOfferingDiskQosHypervisor.IsNull() {
+			diags.Append(state.ServiceOfferingDiskQosHypervisor.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		}
 		v.commonRead(ctx, cs)
 		obj, d := types.ObjectValueFrom(ctx, state.ServiceOfferingDiskQosHypervisor.AttributeTypes(ctx), v)
 		diags.Append(d...)
 		state.ServiceOfferingDiskQosHypervisor = obj
 	}
-	if !state.ServiceOfferingDiskOffering.IsNull() {
+
+	if !state.ServiceOfferingDiskOffering.IsNull() ||
+		cs.CacheMode != "" ||
+		cs.Diskofferingstrictness ||
+		cs.Provisioningtype != "" ||
+		cs.Rootdisksize > 0 ||
+		cs.Storagetype != "" ||
+		cs.Storagetags != "" {
+
 		var v ServiceOfferingDiskOffering
-		diags.Append(state.ServiceOfferingDiskOffering.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		if !state.ServiceOfferingDiskOffering.IsNull() {
+			diags.Append(state.ServiceOfferingDiskOffering.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		}
 		v.commonRead(ctx, cs)
 		obj, d := types.ObjectValueFrom(ctx, state.ServiceOfferingDiskOffering.AttributeTypes(ctx), v)
 		diags.Append(d...)
 		state.ServiceOfferingDiskOffering = obj
 	}
-	if !state.ServiceOfferingDiskQosStorage.IsNull() {
+
+	if !state.ServiceOfferingDiskQosStorage.IsNull() ||
+		cs.Iscustomizediops ||
+		cs.Hypervisorsnapshotreserve > 0 ||
+		cs.Maxiops > 0 ||
+		cs.Miniops > 0 {
+
 		var v ServiceOfferingDiskQosStorage
-		diags.Append(state.ServiceOfferingDiskQosStorage.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		if !state.ServiceOfferingDiskQosStorage.IsNull() {
+			diags.Append(state.ServiceOfferingDiskQosStorage.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		}
 		v.commonRead(ctx, cs)
 		obj, d := types.ObjectValueFrom(ctx, state.ServiceOfferingDiskQosStorage.AttributeTypes(ctx), v)
 		diags.Append(d...)
 		state.ServiceOfferingDiskQosStorage = obj
 	}
-	if !state.ServiceOfferingGpu.IsNull() {
+
+	if !state.ServiceOfferingGpu.IsNull() ||
+		cs.Vgpuprofileid != "" ||
+		cs.Gpucount > 0 ||
+		cs.Gpudisplay {
+
 		var v ServiceOfferingGpu
-		diags.Append(state.ServiceOfferingGpu.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		if !state.ServiceOfferingGpu.IsNull() {
+			diags.Append(state.ServiceOfferingGpu.As(ctx, &v, basetypes.ObjectAsOptions{})...)
+		}
 		v.commonRead(ctx, cs)
 		obj, d := types.ObjectValueFrom(ctx, state.ServiceOfferingGpu.AttributeTypes(ctx), v)
 		diags.Append(d...)
@@ -176,9 +211,7 @@ func (state *ServiceOfferingDiskOffering) commonRead(ctx context.Context, cs *cl
 	if cs.CacheMode != "" {
 		state.CacheMode = types.StringValue(cs.CacheMode)
 	}
-	if cs.Diskofferingstrictness {
-		state.DiskOfferingStrictness = types.BoolValue(cs.Diskofferingstrictness)
-	}
+	state.DiskOfferingStrictness = types.BoolValue(cs.Diskofferingstrictness)
 	if cs.Provisioningtype != "" {
 		state.ProvisionType = types.StringValue(cs.Provisioningtype)
 	}
@@ -194,7 +227,7 @@ func (state *ServiceOfferingDiskOffering) commonRead(ctx context.Context, cs *cl
 }
 
 func (state *ServiceOfferingDiskQosStorage) commonRead(ctx context.Context, cs *cloudstack.ServiceOffering) {
-	if cs.Iscustomizediops {
+	if cs.Iscustomizediops || !state.CustomizedIops.IsNull() {
 		state.CustomizedIops = types.BoolValue(cs.Iscustomizediops)
 	}
 	if cs.Hypervisorsnapshotreserve > 0 {

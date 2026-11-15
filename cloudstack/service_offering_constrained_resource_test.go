@@ -55,6 +55,11 @@ func TestAccServiceOfferingConstrained(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      "cloudstack_service_offering_constrained.constrained2",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccServiceOfferingCustomConstrained_disk,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("cloudstack_service_offering_constrained.constrained1", "name", "constrained1"),
@@ -71,11 +76,6 @@ func TestAccServiceOfferingConstrained(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("cloudstack_service_offering_constrained.disk_storage", "name", "disk_storage"),
 				),
-			},
-			{
-				ResourceName:      "cloudstack_service_offering_constrained.disk_storage",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
